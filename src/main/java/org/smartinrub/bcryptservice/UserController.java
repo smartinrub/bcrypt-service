@@ -1,6 +1,7 @@
 package org.smartinrub.bcryptservice;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,25 @@ public class UserController {
     public void saveUser(@Valid @RequestBody User user) {
         user.setPassword(hashPassword(user.getPassword()));
         userRepository.save(user);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> login(@Valid @RequestBody User user) {
+
+        Optional<User> dbUser = userRepository.findById(user.getId());
+
+        if (!dbUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        String hash  = dbUser.get().getPassword();
+
+        if (!BCrypt.checkpw(user.getPassword(), hash)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Wrong Password!");
+        }
+
+        return ResponseEntity.ok("Welcome " + user.getEmail());
     }
 
     private String hashPassword(String plainTextPassword) {
