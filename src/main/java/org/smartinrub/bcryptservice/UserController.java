@@ -34,7 +34,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> login(@Valid @RequestBody User user) {
 
-        Optional<User> dbUser = userRepository.findById(user.getId());
+        Optional<User> dbUser = userRepository.findByEmail(user.getEmail());
 
         if (!dbUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -46,7 +46,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Wrong Password!");
         }
 
-        return ResponseEntity.ok("Welcome " + user.getEmail());
+        return ResponseEntity.ok("Welcome " + dbUser.get().getEmail());
     }
 
     private String hashPassword(String plainTextPassword) {
