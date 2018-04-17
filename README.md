@@ -4,7 +4,7 @@
 
 Run Spring Boot application from your favourite IDE
 
-## Example usage
+## Usage Example
 
 1. Create new user
 
